@@ -8,10 +8,10 @@
             "name": "Python-Debugger: Modul",
             "type": "debugpy",
             "request": "launch",
-            "module": "crawlee-spider",
+            "module": "crawlee_spider",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "env": { "PYTHONPATH": "${workspaceRoot}"}
+            "env": { "PYTHONPATH": "${workspaceFolder}"}
         }
     ]
 }
