@@ -38,17 +38,9 @@ async def main():
 
             if (link := await context.page.query_selector('.main a.sample-download')) and (code_uri := await link.get_attribute('href')):
                 file_name = code_uri.split("/")[-1]
-### move to back later
-                # Store metadata in Dataset
-                dataset_entry = {
-                    "code_url": code_uri,
-                    "file_key": file_name,
-                    "source_page": context.request.url,
-                    "platforms": platforms,
-                }
-                await sample_metadata_store.push_data(dataset_entry)
-
                 category = context.request.url.split('/')[-2]  # crude category extraction
+
+### move to back later
                 store = sample_stores.get(category, await KeyValueStore.open(configuration=no_purge_configuration, name=category))
                 sample_stores[category] = store
 
@@ -61,12 +53,19 @@ async def main():
                 try:
                     response = await client.get(code_uri)
                     response.raise_for_status()
-
-                    # Get file extension from Content-Type
-                    content_type = response.headers.get("Content-Type", "application/binary")
-                    # file_extension = content_type.split("/")[-1].split(";")[0]
                 
+                    # Store metadata in Dataset
+                    dataset_entry = {
+                        "code_url": code_uri,
+                        "file": file_name,
+                        "relative_file": f"{category}/{file_name}",
+                        "page_url": context.request.url,
+                        "platforms": platforms,
+                    }
+                    await sample_metadata_store.push_data(dataset_entry)
+
                     # Persist result in KeyValueStore
+                    content_type = response.headers.get("Content-Type", "application/binary")
                     await store.set_value(file_name, response.content, content_type=content_type)
 
                     # exclude from reindexing:
