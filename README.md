@@ -14,6 +14,8 @@ Next, install the project dependencies:
 
 ```sh
 uv sync
+source .venv/bin/activate
+playwright install
 ```
 
 Finally, launch the crawler with:
